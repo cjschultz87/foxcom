@@ -436,7 +436,7 @@ Packet_bravo = bytearray(tuple(Packet))
 
 sierra = socket.socket(socket.AF_PACKET,socket.SOCK_RAW,socket.htons(3))
 
-sierra.bind(("wlp3s0",int(sys.argv[3])))
+sierra.bind((sys.argv[6],int(sys.argv[3])))
 
 sierra.send(Packet_bravo)
 
