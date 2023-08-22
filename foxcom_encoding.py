@@ -1,6 +1,11 @@
 import sys
 import os
 
+if sys.argv[1] == "h":
+    print "foxcom_encoding.py <q/a> <input file> <key>"
+    
+    quit()
+
 #################
 def dtb(decimal,L):
 #################
@@ -151,7 +156,7 @@ for letter in alphabet:
     index += 1
 
 try:
-    (len(sys.argv) == 5) == True
+    (len(sys.argv) == 4) == True
 
 except:
     print "Invalid number of arguments"
