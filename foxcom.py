@@ -155,6 +155,53 @@ if sys.argv[1] == "h":
     print "foxcom.py <payload> <source port> <destination port> <source address> <destination address>"
     
     quit()
+    
+mac_source = ""
+mac_destination = ""
+
+mac_sourceA = []
+mac_destinationA = []
+
+def mac_htb(mac,array):
+    index = 0
+    
+    mac_hex = []
+    
+    alpha = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
+    
+    while index < len(mac):
+        
+        if not(mac[index] == ':'):
+            index_1 = 0
+            
+            while index_1 < len(alpha):
+                if mac[index] == alpha[index_1]:
+                    mac_hex.append(index_1)
+                
+                index_1 += 1
+                
+            if index == len(mac)-1:
+                array.append(dtb(htd(mac_hex),8))
+                mac_hex = []
+        else:
+            array.append(dtb(htd(mac_hex),8))
+            mac_hex = []
+        
+        index += 1
+    
+mac_htb(mac_source,mac_sourceA)
+mac_htb(mac_destination,mac_destinationA)
+
+MAC = []
+
+for array in mac_sourceA:
+    for element in array:
+        MAC.append(element)
+        
+for array in mac_destinationA:
+    for element in array:
+        MAC.append(element)
+        
 
 Payload = []
 
@@ -188,6 +235,8 @@ for array in Payload_prime:
 Options = []
 
 IHL = (20 + len(Options)/8)/4
+
+print IHL
     
     
 Base = []
@@ -201,7 +250,7 @@ def baseF(val):
 
 baseF(dtb(4,4))                                         #type 4
 baseF(dtb(IHL,4))                                     #internet header length
-baseF([0,1,0,1,0,0,0,0])                                         #standard, no ecn
+baseF([0,0,0,0,0,0,0,0])                                #standard, no ecn
 baseF(dtb(20+(len(Options)/8)+8+(len(Payload)/8),16))   #length
 baseF(dtb(67,8)+dtb(74,8))                              #ident
 baseF([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])                #frag
@@ -424,6 +473,9 @@ def addBytes(array0,array1):
         
 Packet = []
 
+addBytes(MAC,Packet)
+addBytes(dtb(8,8),Packet)
+addBytes(blank(8),Packet)
 addBytes(Base,Packet)
 addBytes(Options,Packet)
 addBytes(UDP_Header,Packet)
