@@ -1,6 +1,11 @@
 import sys
 import socket
 
+if sys.argv[1] == "h":
+    print "foxcom_listener.py <address> <port>"
+    
+    quit()
+
 sierra = socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_UDP)
 
 try:
