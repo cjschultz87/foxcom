@@ -269,8 +269,22 @@ while index < len(address_array):
     hex_val.append(dth(btd(address_array[index:index+16]),4))
     
     index += 16
+    
+ 
+hex_valR = []
 
-hex_sum = []
+index = 0
+
+while index < len(hex_val):
+    hex_valR.append([])
+    
+    index_1 = 0
+    
+    while index_1 < len(hex_val[index]):
+        hex_valR[index].append(hex_val[index][index_1])
+        
+        index_1 += 1
+    index += 1
 
 
 def hex_sumF(hex_val,hex_sum):
@@ -324,7 +338,9 @@ def hex_carryF(hex_sum):
         hex_sum.pop(4)
         hex_carryFR(hex_sum)
     
-hex_sumF(hex_val,hex_sum)       
+hex_sum = []
+    
+hex_sumF(hex_valR,hex_sum)       
 hex_carryF(hex_sum)
 
 hex_sumR = []
@@ -337,18 +353,21 @@ while index < len(hex_sum):
     
 binary_sumR = dtb(htd(hex_sum),16)
 
+binary_sum = []
+
 for element in binary_sumR:
     if element == 0:
-        element = 1
+        binary_sum.append(1)
     else:
-        element = 0
+        binary_sum.append(0)
+
         
 Base = []
 
 for element in base_digits:
     Base.append(element)
     
-for element in binary_sumR:
+for element in binary_sum:
     Base.append(element)
     
 for element in address_array:
