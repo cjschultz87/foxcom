@@ -248,17 +248,14 @@ for array in address_val:
 
 ###
 
-
-
-
-index = 0
-
 hex_val = []
 base_digits = []
 
 for array in Base:
     for element in array:
         base_digits.append(element)
+
+index = 0
 
 while index < len(base_digits):
     hex_val.append(dth(btd(base_digits[index:index+16]),4))
