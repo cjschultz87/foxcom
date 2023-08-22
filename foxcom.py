@@ -151,8 +151,36 @@ def blank(L):
 
     return alpha
 
+if sys.argv[1] == "h":
+    print "foxcom.py <payload> <source port> <destination port> <source address> <destination address>"
+    
+    quit()
 
 Payload = []
+
+Payload_file = open(sys.argv[1],"rb")
+
+while True:
+
+    letter_m = Payload_file.readline()
+        
+    if letter_m == "":
+        break
+    elif not(letter_m == "" or letter_m == "\n"):
+        Payload.append(int(letter_m))
+
+Payload_file.close()
+
+Payload_prime = []
+
+for element in Payload:
+    Payload_prime.append(dtb(element,8))
+
+Payload = []
+
+for array in Payload_prime:
+    for element in array:
+        Payload.append(element)
     
     
 Options = []
@@ -188,17 +216,17 @@ address_1 = "255.255.255.255"
 
 address_val = ["","","","","","","",""]
 
-#for digit in argv[4]:
-for digit in address_0:
+#source
+for digit in sys.argv[4]:
     if digit == '.':
         index += 1
     else:
         address_val[index] += digit
         
 index += 1
-    
-#for digit in argv[5]:
-for digit in address_1:
+
+#destination    
+for digit in sys.argv[5]:
     if digit == '.':
         index += 1
     else:
@@ -227,10 +255,6 @@ index = 0
 
 hex_val = []
 base_digits = []
-
-for array in Base:
-    for elements in array:
-        base_digits.append(elements)
 
 for array in Base:
     for element in array:
@@ -334,11 +358,9 @@ for element in address_array:
     Base.append(element)
 
 
-
-#UDP_source = dtb(int(argv[2]),16)
-UDP_source = dtb(30000,16)
-#UDP_dest = dtb(int(argv[3]),16)
-UDP_dest = dtb(30000,16)
+#Port numbers
+UDP_source = dtb(int(sys.argv[2]),16)
+UDP_dest = dtb(int(sys.argv[3]),16)
 
 UDP_length = dtb(8 + len(Payload),16)
 
@@ -382,7 +404,6 @@ def addBytes(array0,array1):
         index += 8        
         
 Packet = []
-
 
 addBytes(Base,Packet)
 addBytes(Options,Packet)
