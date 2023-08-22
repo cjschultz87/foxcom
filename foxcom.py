@@ -321,7 +321,7 @@ def hex_carryF(hex_sum):
             carry = 0
         
             if hex_sum[index] > 15:
-                carry = hex_sum[index]-16
+                carry = hex_sum[index] % 16
                 hex_sum[index] = 0
             
             if index == len(hex_sum) - 1:
