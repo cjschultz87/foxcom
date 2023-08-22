@@ -235,8 +235,6 @@ for array in Payload_prime:
 Options = []
 
 IHL = (20 + len(Options)/8)/4
-
-print IHL
     
     
 Base = []
