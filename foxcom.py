@@ -171,6 +171,8 @@ while True:
 
 Payload_file.close()
 
+UDP_length = dtb(8 + len(Payload),16)
+
 Payload_prime = []
 
 for element in Payload:
@@ -198,21 +200,17 @@ def baseF(val):
 
 
 baseF(dtb(4,4))                                         #type 4
-baseF(dtb(IHL,8)[4:8])                                  #internet header length
-baseF(blank(8))                                         #standard, no ecn
+baseF(dtb(IHL,4))                                     #internet header length
+baseF([0,1,0,1,0,0,0,0])                                         #standard, no ecn
 baseF(dtb(20+(len(Options)/8)+8+(len(Payload)/8),16))   #length
 baseF(dtb(67,8)+dtb(74,8))                              #ident
-baseF([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0])                #don't frag
-baseF(dtb(64,8))                                        #ttl
+baseF([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])                #frag
+baseF(dtb(65,8))                                        #ttl
 baseF(dtb(17,8))                                        #UDP protocol
-
 
 
 ###
 index = 0
-
-address_0 = "255.255.255.255"
-address_1 = "255.255.255.255"
 
 address_val = ["","","","","","","",""]
 
@@ -246,6 +244,7 @@ for array in address_val:
         address_array.append(element)
 
 
+
 ###
 
 hex_val = []
@@ -268,8 +267,7 @@ index = 0
 while index < len(address_array):
     hex_val.append(dth(btd(address_array[index:index+16]),4))
     
-    index += 16
-    
+    index += 16   
  
 hex_valR = []
 
@@ -321,9 +319,9 @@ def hex_carryF(hex_sum):
             carry = 0
         
             if hex_sum[index] > 15:
-                carry = hex_sum[index] % 16
-                hex_sum[index] = 0
-            
+                carry = hex_sum[index]/16
+                hex_sum[index] = hex_sum[index]%16
+                
             if index == len(hex_sum) - 1:
                 if carry > 0:
                     hex_sum.append(carry)
@@ -340,7 +338,8 @@ def hex_carryF(hex_sum):
     
 hex_sum = []
     
-hex_sumF(hex_valR,hex_sum)       
+hex_sumF(hex_valR,hex_sum)
+       
 hex_carryF(hex_sum)
 
 hex_sumR = []
@@ -355,11 +354,17 @@ binary_sumR = dtb(htd(hex_sum),16)
 
 binary_sum = []
 
-for element in binary_sumR:
-    if element == 0:
+index = 0
+
+while index < len(binary_sumR):
+    L = len(binary_sumR)-1
+    if binary_sumR[L-index] == 0:
         binary_sum.append(1)
     else:
         binary_sum.append(0)
+    
+    index += 1
+
 
         
 Base = []
@@ -377,8 +382,6 @@ for element in address_array:
 #Port numbers
 UDP_source = dtb(int(sys.argv[2]),16)
 UDP_dest = dtb(int(sys.argv[3]),16)
-
-UDP_length = dtb(8 + len(Payload),16)
 
 UDP_Header = UDP_source + UDP_dest + UDP_length + blank(16)
 
@@ -428,5 +431,13 @@ addBytes(Payload,Packet)
 
 for element in Packet:
     element = bytes(Packet)
-    
+   
 Packet_bravo = bytearray(tuple(Packet))
+
+sierra = socket.socket(socket.AF_PACKET,socket.SOCK_RAW,socket.htons(3))
+
+sierra.bind(("wlp3s0",int(sys.argv[3])))
+
+sierra.send(Packet_bravo)
+
+sierra.close()
