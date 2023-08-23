@@ -189,8 +189,8 @@ def mac_htb(mac,array):
         
         index += 1
     
-mac_htb(mac_source,mac_sourceA)
-mac_htb(mac_destination,mac_destinationA)
+mac_htb(mac_destination,mac_sourceA)
+mac_htb(mac_source,mac_destinationA)
 
 MAC = []
 
