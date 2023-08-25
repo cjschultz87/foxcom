@@ -397,11 +397,10 @@ if address_ident(address_0) == "six":
         
         while index_1 < len(array_0):
             if array_0[index_1] == ':':
-                index += 1
-                index_1 += 1
                 
                 if index_1+1 < len(array_0):
                     if array_0[index_1 + 1] == ':':
+                        index_1 += 1
                         sierra_val = 0
                         for element in array_0:
                             if element == ':':
@@ -409,8 +408,16 @@ if address_ident(address_0) == "six":
                     
                         index_2 = 0
                     
-                        while index_2 < 7 - sierra_val:
+                        while index_2 < 9 - sierra_val:
                             array_1[index] += '0'
+                            
+                            index += 1
+                            
+                            index_2 += 1
+                        index -= 1
+                        
+                index += 1
+                index_1 += 1
             
             array_1[index] += array_0[index_1]
             
