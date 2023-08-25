@@ -1,5 +1,14 @@
 import sys
 import socket
+import time
+
+foxtrot = sys.argv[1]
+port_0  = sys.argv[2]
+port_1  = sys.argv[3]
+address_0 = sys.argv[4]
+address_1 = sys.argv[5]
+
+
 
 #################
 def dtb(decimal,L):
@@ -135,6 +144,30 @@ def htd(hex):
         
     return int_return
     
+###################    
+def hex_str(array):
+###################
+
+    alpha = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
+    
+    bravo = ""
+    
+    index_0 = 0
+    
+    while index_0 < len(array):
+        index_1 = 0
+        
+        while index_1 < len(alpha):
+            if array[index_0] == index_1:
+                bravo += alpha[index_1]
+                
+                break
+            index_1 += 1
+        index_0 += 1
+                
+    return bravo
+
+    
     
 ########################    
 def blank(L):
@@ -150,14 +183,108 @@ def blank(L):
         index += 1
 
     return alpha
+    
+####################    
+def dice(bitLength):
+####################
 
-if sys.argv[1] == "h":
+    alpha = []
+    
+    index = 0
+    
+    while index < bitLength:
+        alpha.append(int((time.clock()*1000000)%2))
+        
+        index += 1
+        
+    return alpha
+
+if foxtrot == "h" or not(len(sys.argv) == 7):
     print "foxcom.py <payload> <source port> <destination port> <source address> <destination address>"
     
     quit()
     
-mac_source = ""
-mac_destination = ""
+    
+    
+    
+def reg_number(c,b):
+    bravo = 0
+    
+    numbers = "0123456789abcdefghijklmnopqrstuvwxyz"
+    
+    numbers = numbers[0:int(b)]
+    
+    index = 0
+    
+    while index < len(numbers):
+        if numbers[index] == c:
+            bravo = 1
+            
+            break
+        
+        index += 1
+        
+    return bravo
+    
+def address_ident(address):
+    ident = 1
+    
+    def address_verification(array,bound):
+        ident = 1
+        
+        index = 0
+        
+        ident_val = 1
+        
+        n_bound = 0
+        
+        if bound == '.':
+            n_bound = 10
+        elif bound == ':':
+            n_bound = 16
+        else:
+            n_bound = 0
+        
+        while index < len(array):
+            while array[index] == bound:
+                index += 1
+            
+            if reg_number(array[index],n_bound) == 0:
+                ident = 0
+                
+                break
+                
+            index += 1
+            
+        return ident
+    
+    if address_verification(address,'.') == 0:
+        ident = 2
+        
+    if ident == 2 and address_verification(address,':') == 0:
+        ident = 0
+    
+    if ident == 1:
+        return "four"
+    elif ident == 2:
+        return "six"
+    else:
+        return "zero"
+        
+        
+        
+        
+if not(address_ident(address_0) == address_ident(address_1)):
+    print "addresses must be either ipv4 or ipv6 and not both or neither"
+    
+    quit()
+        
+
+ 
+
+ 
+mac_source = ""        #source
+mac_destination = ""   #phone
 
 mac_sourceA = []
 mac_destinationA = []
@@ -205,7 +332,7 @@ for array in mac_destinationA:
 
 Payload = []
 
-Payload_file = open(sys.argv[1],"rb")
+Payload_file = open(foxtrot,"rb")
 
 while True:
 
@@ -235,6 +362,7 @@ for array in Payload_prime:
 Options = []
 
 IHL = (20 + len(Options)/8)/4
+
     
     
 Base = []
@@ -246,189 +374,269 @@ def baseF(val):
     Base.append(val)
 
 
-baseF(dtb(4,4))                                         #type 4
-baseF(dtb(IHL,4))                                     #internet header length
-baseF([0,0,0,0,0,0,0,0])                                #standard, no ecn
-baseF(dtb(20+(len(Options)/8)+8+(len(Payload)/8),16))   #length
-baseF(dtb(67,8)+dtb(74,8))                              #ident
-baseF([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])                #frag
-baseF(dtb(65,8))                                        #ttl
-baseF(dtb(17,8))                                        #UDP protocol
+
+address_val = []
 
 
-###
-index = 0
-
-address_val = ["","","","","","","",""]
-
-#source
-for digit in sys.argv[4]:
-    if digit == '.':
-        index += 1
-    else:
-        address_val[index] += digit
-        
-index += 1
-
-#destination    
-for digit in sys.argv[5]:
-    if digit == '.':
-        index += 1
-    else:
-        address_val[index] += digit
-
-address_array = []
-
-index = 0
-
-for element in address_val:
-    address_val[index] = dtb(int(element),8)
+if address_ident(address_0) == "six":
+    baseF(dtb(6,4))                                         #type 6
+    baseF(blank(8))                                         #standard, no ecn
+    baseF(dice(20))                                         #ident
+    baseF(dtb(8+(len(Payload)/8),16))                       #payload length
+    baseF(dtb(17,8))
+    baseF(dtb(64,8))
     
+    address_val = ["","","","","","","","","","","","","","","",""]
+    
+    skip_val = 0
+    
+    index = 0
+    
+    def address_compile(index,array_0,array_1):
+        index_1 = 0
+        
+        while index_1 < len(array_0):
+            if array_0[index_1] == ':':
+                index += 1
+                index_1 += 1
+                
+                if index_1+1 < len(array_0):
+                    if array_0[index_1 + 1] == ':':
+                        sierra_val = 0
+                        for element in array_0:
+                            if element == ':':
+                                sierra_val += 1
+                    
+                        index_2 = 0
+                    
+                        while index_2 < 7 - sierra_val:
+                            array_1[index] += '0'
+            
+            array_1[index] += array_0[index_1]
+            
+            index_1 += 1
+        
+        return (index,array_1)
+        
+    rVal = address_compile(index,address_0,address_val)
+    
+    address_val
+    
+    index = 8
+    
+    rVal = address_compile(index,address_0,address_val)
+    
+    
+    for element in address_val:
+        hex_array = []
+        
+        hex = "0123456789abcdef"
+        
+        for value in element:
+            hex_array.append(hex.index(value))
+            
+        address_val[address_val.index(element)] = dtb(htd(hex_array),16)
+        
+    array_bits = []
+    
+    for array in Base:
+        for element in array:
+            array_bits.append(element)
+
+    for array in address_val:
+        for element in array:
+            array_bits.append(element)
+            
+    Base = array_bits
+
+elif address_ident(address_0) == "four":
+
+    baseF(dtb(4,4))                                         #type 4
+    baseF(dtb(IHL,4))                                       #internet header length
+    baseF(blank(8))                                         #standard, no ecn
+    baseF(dtb(20+(len(Options)/8)+8+(len(Payload)/8),16))   #length
+    baseF(dice(16))                                    #ident
+    baseF([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])                #frag
+    baseF(dtb(65,8))                                        #ttl
+    baseF(dtb(17,8))                                        #UDP protocol
+
+
+    ###
+    index = 0
+
+    address_val = ["","","","","","","",""]
+
+    #source
+    for digit in address_0:
+        if digit == '.':
+            index += 1
+        else:
+            address_val[index] += digit
+        
     index += 1
 
-for array in address_val:
-    for element in array:
-        address_array.append(element)
+    #destination    
+    for digit in address_1:
+        if digit == '.':
+            index += 1
+        else:
+            address_val[index] += digit
 
-
-
-###
-
-hex_val = []
-base_digits = []
-
-for array in Base:
-    for element in array:
-        base_digits.append(element)
-
-index = 0
-
-while index < len(base_digits):
-    hex_val.append(dth(btd(base_digits[index:index+16]),4))
-    
-    index += 16
-
-        
-index = 0
-
-while index < len(address_array):
-    hex_val.append(dth(btd(address_array[index:index+16]),4))
-    
-    index += 16   
- 
-hex_valR = []
-
-index = 0
-
-while index < len(hex_val):
-    hex_valR.append([])
-    
-    index_1 = 0
-    
-    while index_1 < len(hex_val[index]):
-        hex_valR[index].append(hex_val[index][index_1])
-        
-        index_1 += 1
-    index += 1
-
-
-def hex_sumF(hex_val,hex_sum):
+    address_array = []
 
     index = 0
 
-    while index < len(hex_val[0]):
+    for element in address_val:
+        address_val[index] = dtb(int(element),8)
+    
+        index += 1
 
+    for array in address_val:
+        for element in array:
+            address_array.append(element)
+
+    ###
+
+    hex_val = []
+    base_digits = []
+
+    for array in Base:
+        for element in array:
+            base_digits.append(element)
+
+    index = 0
+
+    while index < len(base_digits):
+        hex_val.append(dth(btd(base_digits[index:index+16]),4))
+    
+        index += 16
+
+        
+    index = 0
+
+    while index < len(address_array):
+        hex_val.append(dth(btd(address_array[index:index+16]),4))
+    
+        index += 16   
+ 
+    hex_valR = []
+
+    index = 0
+
+    while index < len(hex_val):
+        hex_valR.append([])
+            
         index_1 = 0
     
-        hex_sum.append(0)
-    
-        while index_1 < len(hex_val):
+        while index_1 < len(hex_val[index]):
+            hex_valR[index].append(hex_val[index][index_1])
         
-            hex_sum[index] += hex_val[index_1][index]
-            
             index_1 += 1
-            
         index += 1
-        
 
-def hex_carryF(hex_sum):
+    def hex_sumF(hex_val,hex_sum):
 
-    def hex_carryFR(hex_sum):
-        
         index = 0
+
+        while index < len(hex_val[0]):
+    
+            index_1 = 0
+    
+            hex_sum.append(0)
+    
+            while index_1 < len(hex_val):
         
-        carry = 0
+                hex_sum[index] += hex_val[index_1][index]
+            
+                index_1 += 1
+            
+            index += 1
         
-        while index < len(hex_sum):
+
+    def hex_carryF(hex_sum):
+
+        def hex_carryFR(hex_sum):
         
-            hex_sum[index] += carry
+            index = 0
         
             carry = 0
         
-            if hex_sum[index] > 15:
-                carry = hex_sum[index]/16
-                hex_sum[index] = hex_sum[index]%16
+            while index < len(hex_sum):
+        
+                hex_sum[index] += carry
+        
+                carry = 0
+        
+                if hex_sum[index] > 15:
+                    carry = hex_sum[index]/16
+                    hex_sum[index] = hex_sum[index]%16
                 
-            if index == len(hex_sum) - 1:
-                if carry > 0:
-                    hex_sum.append(carry)
-                    carry = 0
+                if index == len(hex_sum) - 1:
+                    if carry > 0:
+                        hex_sum.append(carry)
+                        carry = 0
         
-            index += 1
+                index += 1
             
-    hex_carryFR(hex_sum)
-        
-    while len(hex_sum) > 4:
-        hex_sum[0] += hex_sum[4]
-        hex_sum.pop(4)
         hex_carryFR(hex_sum)
+        
+        while len(hex_sum) > 4:
+            hex_sum[0] += hex_sum[4]
+            hex_sum.pop(4)
+            hex_carryFR(hex_sum)
+        
+    hex_sum = []
     
-hex_sum = []
-    
-hex_sumF(hex_valR,hex_sum)
+    hex_sumF(hex_valR,hex_sum)
        
-hex_carryF(hex_sum)
+    hex_carryF(hex_sum)
 
-hex_sumR = []
+    hex_sumR = []
     
-index = 0
+    index = 0
 
-while index < len(hex_sum):
-    hex_sumR.append(hex_sum[len(hex_sum)-(1+index)])
-    index += 1
+    while index < len(hex_sum):
+        hex_sumR.append(hex_sum[len(hex_sum)-(1+index)])
+        index += 1
     
-binary_sumR = dtb(htd(hex_sum),16)
-
-binary_sum = []
-
-index = 0
-
-while index < len(binary_sumR):
-    L = len(binary_sumR)-1
-    if binary_sumR[L-index] == 0:
-        binary_sum.append(1)
-    else:
-        binary_sum.append(0)
+    binary_sumR = dtb(htd(hex_sum),16)
     
-    index += 1
+    binary_sum = []
+
+    index = 0
+
+    while index < len(binary_sumR):
+        L = len(binary_sumR)-1
+        if binary_sumR[L-index] == 0:
+            binary_sum.append(1)
+        else:
+            binary_sum.append(0)
+    
+        index += 1
 
 
         
-Base = []
+    Base = []
 
-for element in base_digits:
-    Base.append(element)
+    for element in base_digits:
+        Base.append(element)
     
-for element in binary_sum:
-    Base.append(element)
+    for element in binary_sum:
+        Base.append(element)
     
-for element in address_array:
-    Base.append(element)
+    for element in address_array:
+        Base.append(element)
+
+else:
+    print "Use a valid address pair"
+    
+    quit()
+
 
 
 #Port numbers
-UDP_source = dtb(int(sys.argv[2]),16)
-UDP_dest = dtb(int(sys.argv[3]),16)
+UDP_source = dtb(int(port_0),16)
+UDP_dest = dtb(int(port_1),16)
 
 UDP_Header = UDP_source + UDP_dest + UDP_length + blank(16)
 
@@ -436,27 +644,6 @@ UDP_Header = UDP_source + UDP_dest + UDP_length + blank(16)
 
 #Header = Base + Options + UDP_Header
 #Packet = Header + Payload
-
-def hex_str(array):
-    alpha = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
-    
-    bravo = ""
-    
-    index_0 = 0
-    
-    while index_0 < len(array):
-        index_1 = 0
-        
-        while index_1 < len(alpha):
-            if array[index_0] == index_1:
-                bravo += alpha[index_1]
-                
-                break
-            index_1 += 1
-        index_0 += 1
-                
-    return bravo
-
 
 
 def addBytes(array0,array1):
@@ -471,9 +658,11 @@ def addBytes(array0,array1):
         
 Packet = []
 
+###
 addBytes(MAC,Packet)
 addBytes(dtb(8,8),Packet)
 addBytes(blank(8),Packet)
+###
 addBytes(Base,Packet)
 addBytes(Options,Packet)
 addBytes(UDP_Header,Packet)
@@ -486,7 +675,7 @@ Packet_bravo = bytearray(tuple(Packet))
 
 sierra = socket.socket(socket.AF_PACKET,socket.SOCK_RAW,socket.htons(3))
 
-sierra.bind((sys.argv[6],int(sys.argv[3])))
+sierra.bind((sys.argv[6],int(port_1)))
 
 sierra.send(Packet_bravo)
 
