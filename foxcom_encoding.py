@@ -229,23 +229,45 @@ for element in message_array:
         message_bits += str(bit)
               
         
-index = 0
-
-key = sys.argv[3]
 key_bits = ""
 
-while index < len(key):
-    letter_k = key[index]
-    alpha = []
+key = sys.argv[3]
+key_f = 0
+
+if sys.argv[3][0:5] == "path:":
+    key_f = open(sys.argv[3][5:len(sys.argv[3])],"r")
     
-    for letter in encoding:
-        if letter_k == letter[0]:
-            alpha = dtb(letter[1],8)
-            
-    for bit in alpha:
-        key_bits += str(bit)
+    kilo = []
+    
+    while True:
+        letter_k = key_f.readline()
         
-    index += 1
+        if letter_k == "":
+            break
+        
+        kilo.append(dtb(int(letter_k),8))
+        
+    for array in kilo:
+        for element in array:
+            key_bits += str(element)
+    
+
+else:
+    index = 0
+
+    while index < len(key):
+        letter_k = key[index]
+        alpha = []
+    
+        for letter in encoding:
+            if letter_k == letter[0]:
+                alpha = dtb(letter[1],8)
+            
+        for bit in alpha:
+            key_bits += str(bit)
+            
+        index += 1
+
 
 
 def fcom(alpha,bravo):
