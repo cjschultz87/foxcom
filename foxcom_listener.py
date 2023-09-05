@@ -19,10 +19,11 @@ alpha_packet = []
     
 while True:
     alpha = sierra.recv(65535)
-    for element in bytearray(alpha):
-        alpha_packet.append(element)
-    
-    for element in alpha_packet:
-        print element
+    for element in alpha:
+        alpha_byte = bytearray(alpha)[alpha.index(element)]
+        alpha_binary = ""
+        for bit in dtb(alpha_byte,8):
+            alpha_binary += str(bit)
+        print alpha_binary + "\t\t" + str(alpha_byte) + "\t\t...\t\t" + element
         
-    print '\n'
+    print '\n***\n'
