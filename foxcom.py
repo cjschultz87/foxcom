@@ -695,9 +695,7 @@ elif address_ident(address_0) == "four":
             else:
                 binary_sum.append(0)
     
-            index += 1   
-
-        print binary_sum
+            index += 1
             
         return binary_sum
 
