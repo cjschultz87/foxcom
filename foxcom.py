@@ -798,7 +798,40 @@ if packet_type == "tcp":
     TCP_source = dtb(int(port_0),16)
     TCP_dest = dtb(int(port_1),16)
     
-    TCP_seq = dice(32)
+    index = 0
+    
+    sierra_val = 0
+    
+    while index < 4:        
+        
+        def byte_valF():
+            bravo = 0
+            
+            index_1 = 0
+            
+            while index_1 < 3:
+                bravo += ((time.clock()*1000000)%10) * pow(10,index_1)
+            
+                index_1 += 1
+                
+            return float(1 + (bravo % 254))
+        
+        sierra_val += (byte_valF()/byte_valF()) * pow(255,index)
+        
+        index += 1
+    
+    seq_ceiling = 0
+    
+    index = 0
+    
+    while index < 32:
+        seq_ceiling += pow(2,index)
+        
+        index += 1
+    
+    sierra_val = int(int((1+(time.clock()*1000000)%7)*sierra_val) % seq_ceiling)
+    
+    TCP_seq = dtb(sierra_val,32)
     
     TCP_ack = blank(32)
     
