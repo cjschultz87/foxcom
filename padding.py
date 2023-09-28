@@ -18,8 +18,6 @@ def dice(max):
     while index < n:
         rVal += int((time.clock()*1000000)%10) * pow(10,index)
         
-        print str(index) + ", " + str(rVal)
-        
         index += 1
         
     rVal %= max
