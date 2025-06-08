@@ -442,7 +442,7 @@ if bravo == 1:
         if letter_m.decode("utf-8") == '':
             break
         elif not(letter_m == "" or letter_m == "\n"):
-            Payload.append(ord(letter_m[0:1].decode("utf-8")))
+            Payload.append(int.from_bytes(letter_m[0:1],"big",signed=True))
 
     Payload_file.close()
 else:
