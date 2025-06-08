@@ -439,10 +439,10 @@ if bravo == 1:
 
         letter_m = Payload_file.readline()
         
-        if letter_m == "":
+        if letter_m.decode("utf-8") == '':
             break
         elif not(letter_m == "" or letter_m == "\n"):
-            Payload.append(int(letter_m))
+            Payload.append(int(letter_m[0:1].decode("utf-8")))
 
     Payload_file.close()
 else:
