@@ -433,16 +433,22 @@ Payload = []
 
 if bravo == 1:
 
+    Payload_file = open(foxtrot,"ab")
+
+    EOF = foxtrot.tell()
+
+    Payload_file.close()
+
     Payload_file = open(foxtrot,"rb")
 
-    while True:
+    foxtrot_i = 0
+
+    while foxtrot_i < EOF:
 
         letter_m = Payload_file.readline()
-        
-        if letter_m.decode("utf-8") == '':
-            break
-        elif not(letter_m == "" or letter_m == "\n"):
-            Payload.append(int.from_bytes(letter_m[0:1],"big",signed=True))
+        Payload.append(int.from_bytes(letter_m[0:1],"big",signed=True))
+
+        foxtrot_i += len(letter_m)
 
     Payload_file.close()
 else:
