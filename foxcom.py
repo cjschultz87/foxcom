@@ -435,7 +435,7 @@ if bravo == 1:
 
     Payload_file = open(foxtrot,"ab")
 
-    EOF = foxtrot.tell()
+    EOF = Payload_file.tell()
 
     Payload_file.close()
 
