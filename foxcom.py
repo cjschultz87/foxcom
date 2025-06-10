@@ -446,7 +446,15 @@ if bravo == 1:
     while foxtrot_i < EOF:
 
         letter_m = Payload_file.readline()
-        Payload.append(int.from_bytes(letter_m[0:1],"big",signed=True))
+        sierra = ""
+        for m in letter_m:
+            if m >= ord('0') and m <= ord('9'):
+                sierra += chr(m)
+            else:
+                break
+
+        if int(sierra) <= 255:
+            Payload.append(int(sierra))
 
         foxtrot_i += len(letter_m)
 
