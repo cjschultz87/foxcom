@@ -235,12 +235,18 @@ elif sys.argv[1] == "a":
             sierra = ""
             
             for m in letter_m:
-                if m == ord('\n'):
-                    break
+                if not(m >= ord('0') and m <= ord('9')):
+                    if m == ord('\n'):
+                        break
+                    else:
+                        pass
                 else:
                     sierra += chr(m)
             
-            message_array.append(int(sierra))
+            if len(sierra) > 0:
+                message_array.append(int(sierra))
+            else:
+                pass
             
 elif sys.argv[1][0:3] == "pad":
     
@@ -424,4 +430,5 @@ elif sys.argv[1] == "a":
     
     print(string_out)
     
+
 
