@@ -15,6 +15,9 @@ address_0 = ""
 address_1 = ""
 ttl = 64
 
+sequence_val = 0
+acknowledge_val = 0
+
 bravo = 0
 
 packet_type = "udp"
@@ -107,12 +110,27 @@ while index < len(sys.argv) - 4:
                 (type(tcp_window) == type(5)) == True
                 
                 type_length = 20
+				
+				if sys.argv[index+1] == "sa":
+					index += 1
+					try:
+						(type(sys.argv[index+1]) == type(5)) == True
+						(type(sys.argv[index+2]) == type(5)) == True
+					except:
+						print("Invalid seq/ack data type")
+					sequence_val = int(sys.argv[index+1])
+					acknowledge_val = int(sys.argv[inndex+2])
+					index += 2
         except:
             print("Invalid type")
             
             quit()
         
-    index += 1
+	else:
+		print("Invalid arguments")
+		quit()
+	
+	index += 1
     
 address_0 = sys.argv[argv_L - 3]
 address_1 = sys.argv[argv_L - 2]
@@ -953,9 +971,15 @@ if packet_type == "tcp":
     
     TCP_seq = dtb(sierra_val,32)
     
-    TCP_ack = blank(32)
+    if sequence_val != 0:
+		TCP_seq = dtb(sequence_val,32)
+	
+	TCP_ack = blank(32)
     
-    TCP_data_o = dtb(5,4) #tcp data is 5 32 bit words
+    if acknowledge_val != 0:
+		TCP_ack = dtb(acknowledge_val,32)
+
+	TCP_data_o = dtb(5,4) #tcp data is 5 32 bit words
     
     index = 0
     
