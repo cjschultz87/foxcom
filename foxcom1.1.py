@@ -981,37 +981,38 @@ if packet_type == "tcp":
     tcp_base = []
     
     if address_ident(address_0) == "six":
-        for bit in Base[64:320]:
-            tcp_base.append(bit)
+        pass
+        
 
-            for bit in Base[4:10]:
-                tcp_base.append(bit)
-    
     elif address_ident(address_0) == "four":
         for bit in Base[96:160]:
             tcp_base.append(bit)
             
-        bravo = [0,0]
+        for bit in blank(8):
+        	tcp_base.append(bit)
+        	
+        for bit in dtb(6,8):
+        	tcp_base.append(bit)
         
-        for bit in Base[8:14]:
-            bravo.append(bit)
+        for bit in dtb(20 + int(len(Payload)/8),16):
+        	tcp_base.append(bit)
+        	
+        tcp_check = []
         
-        for bit in bravo:
-            tcp_base.append(bit)
-
-    for bit in dtb(20,16):
-        tcp_base.append(bit)
+        th_app(tcp_base,tcp_check)
         
-    for bit in dtb(len(Payload),16):
-        tcp_base.append(bit)
+        th_app(Type_Header,tcp_check)
         
-    th_app(check(tcp_base),Type_Header)
-    
-    th_app(blank(16),Type_Header)
+        th_app(blank(32),tcp_check)
         
-    
-            
-    
+        th_app(Payload,tcp_check)
+        
+        if len(tcp_check) % 16 != 0:
+        	th_app(blank(8),tcp_check)
+        
+        th_app(check(tcp_check),Type_Header)
+        
+        th_app(blank(16),Type_Header)
     
 
 
