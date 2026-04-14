@@ -34,34 +34,26 @@ int power(int base, int N)
 ///////////////////////////////////////
 
 
-void checksum(void *alphaIn, int length, void* out, int outL)
+void checksum(unsigned short *alphaIn, int length, void* out, int outL)
 {
-	BYTE* alphaInB;
-	alphaInB = alphaIn;
+	//BYTE* alphaInB;
+	//alphaInB = alphaIn;
 	
-	unsigned int sum = 0;
+	unsigned long sum = 0;
 	
 	for (int i = 0; i < length; i++)
-	{	
-		unsigned short bravo = 0;
+	{
+		sum += alphaIn[i];
 		
-		for (int i = 0; i < 2; i++)
+		if (sum & 0xFFFF0000)
 		{
-			bravo += *alphaInB * power(256, 2 - (1 + i));
-			
-			alphaInB++;
+			sum &= 0xFFFF;
+			sum++;
 		}
-
-		sum += bravo;
-		
-		unsigned short *upper;
-		
-		upper = &sum;
-		
-		sum = (sum & 65535) + *upper;
-		
-		alphaInB ++;
+		// from davie and petersen, see "computer networks: a systems approach"
 	}
+	
+	unsigned short sum_prime = ~(sum & 0xFFFF);
 	
 	BYTE* bOut;
 	
@@ -69,7 +61,7 @@ void checksum(void *alphaIn, int length, void* out, int outL)
 	
 	BYTE* sierra;
 	
-	sierra = &sum;
+	sierra = &sum_prime;
 	
 	for (int i = 0; i < outL; i++)
 	{
@@ -555,13 +547,13 @@ void main(int argc, str* argv)
 	
 	BYTE* fLB;
 	
-	fLB = &fL;
+	fLB = &fL+1;
 	
 	for (int i = 0; i < 2; i++)
 	{
 		frame[16 + i] = *fLB; // total length byte
 		
-		fLB++;
+		fLB--;
 	}
 	
 	frame[18] = (BYTE)rand();
@@ -631,31 +623,37 @@ void main(int argc, str* argv)
 	//start udp header
 	//////////////////
 	
-	BYTE* sierra = calloc(2,sizeof(BYTE));
+	BYTE* sierra;
 	
 	sierra = &portIn;
 	
-	for (int i = 0; i < 2; i++)
+	for (int i = 1; i >= 0; i--)
 	{
-		frame[34 + i] = sierra[i];
+		frame[34 + i] = *sierra;
+		
+		sierra++;
 	}
 	// port in
 	
 	sierra = &portOut;
 	
-	for (int i = 0; i < 2; i++)
+	for (int i = 1; i >= 0; i--)
 	{
-		frame[36 + i] = sierra[i];
+		frame[36 + i] = *sierra;
+		
+		sierra++;
 	}
 	// port out
 	
-	short udpL = 8 + foxtrotL;
+	unsigned short udpL = 8 + foxtrotL;
 	
 	sierra = &udpL;
 	
-	for (int i = 0; i < 2; i++)
+	for (int i = 1; i >= 0; i--)
 	{
-		frame[38 + i] = sierra[i];
+		frame[38 + i] = *sierra;
+		
+		sierra++;
 	}
 	// udp length
 	
@@ -671,7 +669,7 @@ void main(int argc, str* argv)
 	BYTE* udpPseudoHeader = calloc(pseudoL, sizeof(BYTE));
 	
 	assignData(
-		30,			// lowerboundin
+		26,			// lowerboundin
 		0,			// lowerboundout
 		8,			// length
 		frame,		// alpha in
